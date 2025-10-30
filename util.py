@@ -90,34 +90,33 @@ def update_pumpkin(sx, sy, width, height):
             x, y = sx + i, sy + j
             move_to(x, y)
 
+        while True:
             entity = get_entity_type()
-            if entity == None:
+            if (entity == None) or (entity == Entities.Dead_Pumpkin):
                 set_ground_type(Grounds.Soil)
                 plant(Entities.Pumpkin)
                 maintain_water()
                 todo_x_list.append(i)  # re-check
-            elif entity == Entities.Dead_Pumpkin:
-                # re-plant
-                set_ground_type(Grounds.Soil)
-                plant(Entities.Pumpkin)
-                maintain_water()
-                todo_x_list.append(i)  # re-check
+                break
             elif entity == Entities.Pumpkin:
                 if not can_harvest():
                     # growing pumpkin
                     if num_items(Items.Fertilizer) > 0:
                         use_item(Items.Fertilizer)
+                        continue  # re-check immediately
                     else:
-                        todo_x_list.append(i)  # re-check
-                        continue
-                # good pumpkin
+                        todo_x_list.append(i)  # re-check after growing
+                        break
+                else:
+                    # good pumpkin
+                    break
             else:
+                # wrong entity
                 if can_harvest():
                     harvest()
                 set_ground_type(Grounds.Soil)
-                plant(Entities.Pumpkin)
-                maintain_water()
-                todo_x_list.append(i)  # re-check
+                continue  # re-check immediately
+
     # done
     harvest()
 
@@ -289,26 +288,38 @@ def spawn_update_primitives(sx, sy, width, height, num_drone):
 
 
 def fill_row_good_pumpkin(sx, y, width):
-    for i in range(width):
+    todo_x_list = list(range(sx, sx + width))
+    while len(todo_x_list) > 0:
+        i = todo_x_list.pop(0)
         x = sx + i
         move_to(x, y)
 
-        entity = get_entity_type()
-        # plant others
-        if (
-            (entity != None)
-            and (entity != Entities.Pumpkin)
-            and (entity != Entities.Dead_Pumpkin)
-        ):
-            if not can_harvest():
-                use_item(Items.Fertilizer)
-            harvest()
-        # while error occured
-        while (get_entity_type() != Entities.Pumpkin) or not can_harvest():
-            set_ground_type(Grounds.Soil)
-            plant(Entities.Pumpkin)
-            if not can_harvest():
-                use_item(Items.Fertilizer)
+        while True:
+            entity = get_entity_type()
+            if (entity == None) or (entity == Entities.Dead_Pumpkin):
+                set_ground_type(Grounds.Soil)
+                plant(Entities.Pumpkin)
+                maintain_water()
+                todo_x_list.append(i)  # re-check
+                break
+            elif entity == Entities.Pumpkin:
+                if not can_harvest():
+                    # growing pumpkin
+                    if num_items(Items.Fertilizer) > 0:
+                        use_item(Items.Fertilizer)
+                        continue  # re-check immediately
+                    else:
+                        todo_x_list.append(i)  # re-check after growing
+                        break
+                else:
+                    # good pumpkin
+                    break
+            else:
+                # wrong entity
+                if can_harvest():
+                    harvest()
+                set_ground_type(Grounds.Soil)
+                continue  # re-check immediately
 
 
 def update_pumpkin_mt(sx, sy, width, height):
