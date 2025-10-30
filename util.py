@@ -24,18 +24,6 @@ def move_to(x, y):
     return True
 
 
-def is_in_area(sx, sy, w, h, x, y):
-    if x < sx:
-        return False
-    if y < sy:
-        return False
-    if sx + w <= x:
-        return False
-    if sy + h <= y:
-        return False
-    return True
-
-
 def set_ground_type(ground):
     if get_ground_type() != ground:
         till()
@@ -46,30 +34,7 @@ def maintain_water():
         use_item(Items.Water)
 
 
-def init_area(sx, sy, width, height, ground):
-    for j in range(height):
-        for i in range(width):
-            x, y = sx + i, sy + j
-
-            move_to(x, y)
-            if can_harvest():
-                harvest()
-            set_ground_type(ground)
-
-
-def create_pos_list(x, y, width, height, pos_list):
-    # create new list
-    if pos_list == None:
-        pos_list = []
-
-    # alloc all posisitons
-    for j in range(height):
-        for i in range(width):
-            pos_list.append((i + x, j + y))
-    return pos_list
-
-
-def update_common(sx, sy, width, height, ground, entity):
+def update_primitives(sx, sy, width, height, ground, entity):
     for j in range(height):
         for i in range(width):
             # place the trees altenatery
@@ -91,27 +56,27 @@ def update_common(sx, sy, width, height, ground, entity):
 
 def update_glass(sx, sy, width, height):
     change_hat(Hats.Straw_Hat)
-    update_common(sx, sy, width, height, Grounds.Grassland, Entities.Grass)
+    update_primitives(sx, sy, width, height, Grounds.Grassland, Entities.Grass)
 
 
 def update_bush(sx, sy, width, height):
     change_hat(Hats.Green_Hat)
-    update_common(sx, sy, width, height, Grounds.Soil, Entities.Bush)
+    update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Bush)
 
 
 def update_carrot(sx, sy, width, height):
     change_hat(Hats.Carrot_Hat)
-    update_common(sx, sy, width, height, Grounds.Soil, Entities.Carrot)
+    update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Carrot)
 
 
 def update_sunflower(sx, sy, width, height):
     change_hat(Hats.Sunflower_Hat)
-    update_common(sx, sy, width, height, Grounds.Soil, Entities.Sunflower)
+    update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Sunflower)
 
 
 def update_tree(sx, sy, width, height):
     change_hat(Hats.Tree_Hat)
-    update_common(sx, sy, width, height, Grounds.Soil, Entities.Tree)
+    update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Tree)
 
 
 def update_pumpkin(sx, sy, width, height):
@@ -119,26 +84,40 @@ def update_pumpkin(sx, sy, width, height):
     move_to(sx, sy)
 
     for j in range(height):
-        for i in range(width):
+        todo_x_list = list(range(sx, sx + width))
+        while len(todo_x_list) > 0:
+            i = todo_x_list.pop(0)
             x, y = sx + i, sy + j
             move_to(x, y)
 
             entity = get_entity_type()
-            # plant others
-            if (
-                (entity != None)
-                and (entity != Entities.Pumpkin)
-                and (entity != Entities.Dead_Pumpkin)
-            ):
-                if not can_harvest():
-                    use_item(Items.Fertilizer)
-                harvest()
-            # while error occured
-            while (get_entity_type() != Entities.Pumpkin) or not can_harvest():
+            if entity == None:
                 set_ground_type(Grounds.Soil)
                 plant(Entities.Pumpkin)
+                maintain_water()
+                todo_x_list.append(i)  # re-check
+            elif entity == Entities.Dead_Pumpkin:
+                # re-plant
+                set_ground_type(Grounds.Soil)
+                plant(Entities.Pumpkin)
+                maintain_water()
+                todo_x_list.append(i)  # re-check
+            elif entity == Entities.Pumpkin:
                 if not can_harvest():
-                    use_item(Items.Fertilizer)
+                    # growing pumpkin
+                    if num_items(Items.Fertilizer) > 0:
+                        use_item(Items.Fertilizer)
+                    else:
+                        todo_x_list.append(i)  # re-check
+                        continue
+                # good pumpkin
+            else:
+                if can_harvest():
+                    harvest()
+                set_ground_type(Grounds.Soil)
+                plant(Entities.Pumpkin)
+                maintain_water()
+                todo_x_list.append(i)  # re-check
     # done
     harvest()
 
@@ -173,7 +152,7 @@ def update_cactus(x, y, width, height):
     move_to(x, y)
 
     # harvest all area
-    update_common(x, y, width, height, Grounds.Soil, Entities.Cactus)
+    update_primitives(x, y, width, height, Grounds.Soil, Entities.Cactus)
     # harvest sorted cactus
     sort_cactus(x, y, width, height)
     harvest()
@@ -304,7 +283,7 @@ def spawn_update_primitives(sx, sy, width, height, num_drone):
 
         def run_drone_n():
             while True:
-                update_common(x, y, w, h, g, e)
+                update_primitives(x, y, w, h, g, e)
 
         spawn_drone(run_drone_n)
 
@@ -375,7 +354,7 @@ def update_row_mt(sx, y, width, height, ground, entity):
         maintain_water()
 
 
-def update_common_mt(sx, sy, width, height, ground, entity):
+def update_primitives_mt(sx, sy, width, height, ground, entity):
     drones = []
     for j in range(height):
         y = sy + j
@@ -464,6 +443,6 @@ def update_cactus_mt(x, y, width, height):
     move_to(x, y)
 
     # plant & sort
-    update_common_mt(x, y, width, height, Grounds.Soil, Entities.Cactus)
+    update_primitives_mt(x, y, width, height, Grounds.Soil, Entities.Cactus)
     sort_cactus_mt(x, y, width, height)
     harvest()
