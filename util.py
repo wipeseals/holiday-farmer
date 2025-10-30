@@ -49,7 +49,6 @@ def update_tree(sx, sy, width, height):
 
 def update_pumpkin(sx, sy, width, height):
     change_hat(Hats.Pumpkin_Hat)
-    ctrl.move_to(sx, sy)
 
     for j in range(height):
         todo_x_list = list(range(sx, sx + width))
@@ -58,31 +57,31 @@ def update_pumpkin(sx, sy, width, height):
             x, y = sx + i, sy + j
             ctrl.move_to(x, y)
 
-        while True:
-            entity = get_entity_type()
-            if (entity == None) or (entity == Entities.Dead_Pumpkin):
-                ctrl.set_ground_type(Grounds.Soil)
-                plant(Entities.Pumpkin)
-                ctrl.maintain_water()
-                todo_x_list.append(i)  # re-check
-                break
-            elif entity == Entities.Pumpkin:
-                if not can_harvest():
-                    # growing pumpkin
-                    if ctrl.use_fertilizer():
-                        continue  # re-check immediately
+            while True:
+                entity = get_entity_type()
+                if (entity == None) or (entity == Entities.Dead_Pumpkin):
+                    ctrl.set_ground_type(Grounds.Soil)
+                    plant(Entities.Pumpkin)
+                    ctrl.maintain_water()
+                    todo_x_list.append(i)  # re-check
+                    break
+                elif entity == Entities.Pumpkin:
+                    if not can_harvest():
+                        # growing pumpkin
+                        if ctrl.use_fertilizer():
+                            continue  # re-check immediately
+                        else:
+                            todo_x_list.append(i)  # re-check after growing
+                            break
                     else:
-                        todo_x_list.append(i)  # re-check after growing
+                        # good pumpkin
                         break
                 else:
-                    # good pumpkin
-                    break
-            else:
-                # wrong entity
-                if can_harvest():
-                    harvest()
-                ctrl.set_ground_type(Grounds.Soil)
-                continue  # re-check immediately
+                    # wrong entity
+                    if can_harvest():
+                        harvest()
+                    ctrl.set_ground_type(Grounds.Soil)
+                    continue  # re-check immediately
 
     # done
     harvest()
@@ -115,7 +114,6 @@ def sort_cactus(sx, sy, width, height):
 
 def update_cactus(x, y, width, height):
     change_hat(Hats.Cactus_Hat)
-    ctrl.move_to(x, y)
 
     # harvest all area
     update_primitives(x, y, width, height, Grounds.Soil, Entities.Cactus)
@@ -258,7 +256,6 @@ def update_pumpkin_row(sx, y, width):
 
 def update_pumpkin_mt(sx, sy, width, height):
     change_hat(Hats.Pumpkin_Hat)
-    ctrl.move_to(sx, sy)
 
     drones = []
     for j in range(height):
@@ -360,7 +357,6 @@ def sort_cactus_mt(sx, sy, width, height):
 
 def update_cactus_mt(x, y, width, height):
     change_hat(Hats.Cactus_Hat)
-    ctrl.move_to(x, y)
 
     # plant & sort
     update_primitives_mt(x, y, width, height, Grounds.Soil, Entities.Cactus)
