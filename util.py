@@ -375,14 +375,17 @@ def solve_maze_mt(sx, sy, px, py, gx, gy, width, height):
         (0, -1, South, North),
     ]
 
+    # debug
+    ctrl.set_ground_type(Grounds.Soil)
+
     cx, cy = get_pos_x(), get_pos_y()
     # goaled
     if get_entity_type() == Entities.Grass:
-        return False
+        return
     # goal
     if (cx == gx) and (cy == gy):
         harvest()
-        return True
+        return
 
     # search
     next_candidates = []
@@ -400,44 +403,32 @@ def solve_maze_mt(sx, sy, px, py, gx, gy, width, height):
     num_cand = len(next_candidates)
     if num_cand == 0:
         # dead end
-        return False
-    # multiple candidates
-    spawn_n = min(max_drones() - num_drones(), num_cand - 1)  # last: use own
-    drones = []
-    for i in range(spawn_n):
-        dx, dy, dir, dir_inv = next_candidates[i]
+        return
+    elif num_cand == 1:
+        # single candidate
+        dx, dy, dir, dir_inv = next_candidates[0]
+        move(dir)
+        # (px, py) -> (cx, cy): update came from
+        solve_maze_mt(sx, sy, cx, cy, gx, gy, width, height)
+        return
+    else:
+        # multiple candidates
+        drones = []
+        for dx, dy, dir, dir_inv in next_candidates:
+            # wait other drone despawn
+            while max_drones() - num_drones() <= 0:
+                pass
 
-        def task_f():
-            move(dir)
-            # (px, py) -> (cx, cy): update came from
-            ret = solve_maze_mt(sx, sy, cx, cy, gx, gy, width, height)
-            if not ret:
-                # pop pos & try others
-                move(dir_inv)
-            return ret
+            # define task & spawn
+            def task_f():
+                move(dir)
+                # (px, py) -> (cx, cy): update came from
+                solve_maze_mt(sx, sy, cx, cy, gx, gy, width, height)
 
-        ctrl.dispatch_mt_task(drones, task_f)
+            ctrl.dispatch_mt_task(drones, task_f)
 
-    # use own
-    dx, dy, dir, dir_inv = next_candidates[-1]
-    # try next pos
-    move(dir)
-    # (px, py) -> (cx, cy): update came from
-    ret = solve_maze_mt(sx, sy, cx, cy, gx, gy, width, height)
-    # goal
-    if ret:
-        return True
-    # pop pos & try others
-    move(dir_inv)
-
-    # wait all drones brocking
-    for d in drones:
-        ret = wait_for(d)
-        if ret:
-            return True
-
-    # no goal found
-    return False
+        # no wait all drones brocking:
+        #   if any drone found goal, entity changed to Grass
 
 
 def update_maze_mt(x, y, width, height):
@@ -452,6 +443,6 @@ def update_maze_mt(x, y, width, height):
     # solve
     gx, gy = measure()
     # (px, py) = (sx, sy): came from initial pos
-    if not solve_maze_mt(sx, sy, sx, sy, gx, gy, width, height):
-        # clear maze
-        harvest()
+    solve_maze_mt(sx, sy, sx, sy, gx, gy, width, height)
+    while num_drones() > 1:
+        pass
