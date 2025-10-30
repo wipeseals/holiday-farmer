@@ -1,7 +1,5 @@
-from __builtins__ import *  # noqa: F403
-
 import util
-
+from __builtins__ import *
 
 clear()
 

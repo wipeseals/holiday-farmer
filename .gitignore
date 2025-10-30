@@ -1,2 +1,3 @@
-*.json
+save.json
+.ruff_cache
 __builtins__.py
