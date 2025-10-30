@@ -161,7 +161,7 @@ def update_dino():
     change_hat(Hats.Gray_Hat)
 
 
-def solve_maze(sx, sy, gx, gy, width, height, visited):
+def solve_maze(sx, sy, px, py, gx, gy, width, height):
     # dx, dy, direction, inv(direction)
     dirs = [
         (1, 0, East, West),
@@ -171,8 +171,6 @@ def solve_maze(sx, sy, gx, gy, width, height, visited):
     ]
 
     cx, cy = get_pos_x(), get_pos_y()
-    # add visited
-    visited.append((cx, cy))
     # goal
     if (cx == gx) and (cy == gy):
         harvest()
@@ -182,13 +180,16 @@ def solve_maze(sx, sy, gx, gy, width, height, visited):
     for dx, dy, dir, dir_inv in dirs:
         nx, ny = cx + dx, cy + dy
         if (nx < 0) or (ny < 0) or (width <= nx) or (height <= ny):
+            # out of range
             continue
-        if (nx, ny) in visited:
+        if (nx == px) and (ny == py):
+            # came from
             continue
         if can_move(dir):
             # try next pos
             move(dir)
-            ret = solve_maze(sx, sy, gx, gy, width, height, visited)
+            # (px, py) -> (cx, cy): update came from
+            ret = solve_maze(sx, sy, cx, cy, gx, gy, width, height)
             # goal
             if ret:
                 return True
@@ -210,7 +211,8 @@ def update_maze(x, y, width, height):
 
     # solve
     gx, gy = measure()
-    if not solve_maze(sx, sy, gx, gy, width, height, []):
+    # (px, py) = (sx, sy): came from initial pos
+    if not solve_maze(sx, sy, sx, sy, gx, gy, width, height):
         # clear maze
         harvest()
 
