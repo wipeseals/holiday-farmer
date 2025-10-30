@@ -1,4 +1,4 @@
-from __builtins__ import *  # noqa: F403
+from __builtins__ import *
 
 
 def move_to(x, y):
@@ -11,17 +11,15 @@ def move_to(x, y):
         if dx < 0:
             if not move(West):
                 return False
-        else:
-            if not move(East):
-                return False
+        elif not move(East):
+            return False
 
     for j in range(abs(dy)):
         if dy < 0:
             if not move(South):
                 return False
-        else:
-            if not move(North):
-                return False
+        elif not move(North):
+            return False
 
     return True
 
@@ -149,7 +147,7 @@ def sort_cactus(sx, sy, width, height):
     # sort all rows
     for j in range(height):
         for n in range(width):
-            for i in range(0, width - 1 - n):
+            for i in range(width - 1 - n):
                 x, y = i + sx, j + sy
                 move_to(x, y)
                 s0 = measure()
@@ -160,7 +158,7 @@ def sort_cactus(sx, sy, width, height):
     # sort all cols
     for i in range(width):
         for n in range(height):
-            for j in range(0, height - 1 - n):
+            for j in range(height - 1 - n):
                 x, y = i + sx, j + sy
                 move_to(x, y)
                 s0 = measure()
@@ -399,7 +397,7 @@ def update_common_mt(sx, sy, width, height, ground, entity):
 def sort_cactus_row_mt(sx, y, width, height):
     # sort all rows
     for n in range(width):
-        for i in range(0, width - 1 - n):
+        for i in range(width - 1 - n):
             x = i + sx
             move_to(x, y)
             s0 = measure()
@@ -412,7 +410,7 @@ def sort_cactus_row_mt(sx, y, width, height):
 def sort_cactus_col_mt(x, sy, width, height):
     # sort all cols
     for n in range(height):
-        for j in range(0, height - 1 - n):
+        for j in range(height - 1 - n):
             y = j + sy
             move_to(x, y)
             s0 = measure()

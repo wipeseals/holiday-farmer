@@ -1,0 +1,26 @@
+[tool.ruff]
+
+# 基本設定
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+ignore = [
+    "F405",    # `name` may be undefined, or defined from star imports
+    "F403",    # 'from module import *' used; unable to detect undefined names
+    "F401",    # 'module' imported but unused
+    "E501",    # line too long (handled by formatter)
+    "S101",    # Use of assert detected
+    "T201",    # print found
+    "T203",    # pprint found
+    "B007",    # Loop control variable not used within loop body
+    "PLR2004", # Magic value used in comparison
+    "E711",    # Comparison to None should be `cond is None`
+    "SIM102",  # Use a single if statement instead of nested if
+    "SIM103",  # Return the condition directly
+    "PLR1714", # Consider merging multiple comparisons
+    "ERA001",  # Found commented-out code
+    "A001",    # Variable is shadowing a Python builtin
+    "B023",    # Function definition does not bind loop variable
+    "ARG001",  # Unused function argument
+]
