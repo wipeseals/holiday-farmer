@@ -375,9 +375,6 @@ def solve_maze_mt(sx, sy, px, py, gx, gy, width, height):
         (0, -1, South, North),
     ]
 
-    # debug
-    ctrl.set_ground_type(Grounds.Soil)
-
     cx, cy = get_pos_x(), get_pos_y()
     # goaled
     if get_entity_type() == Entities.Grass:
