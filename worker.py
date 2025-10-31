@@ -13,6 +13,16 @@ def update_primitives(sx, sy, width, height, ground, entity):
             x, y = sx + i, sy + j
             control.move_to(x, y)
 
+            # Grass special case
+            if entity == Entities.Grass:
+                control.set_ground_type(ground)
+                while not can_harvest():
+                    if control.use_fertilizer():
+                        continue
+                    control.maintain_water()
+                harvest()
+                continue
+
             if get_entity_type() != None:
                 if not can_harvest():
                     control.use_fertilizer()
@@ -282,13 +292,22 @@ def update_primitives_row(sx, y, width, height, ground, entity):
         x = sx + i
         control.move_to(x, y)
 
+        # Grass special case
+        if entity == Entities.Grass:
+            control.set_ground_type(ground)
+            while not can_harvest():
+                if control.use_fertilizer():
+                    continue
+                control.maintain_water()
+            harvest()
+            continue
+
         if get_entity_type() != None:
             if not can_harvest():
                 control.use_fertilizer()
             harvest()
         control.set_ground_type(ground)
-        if entity != Entities.Grass:
-            plant(entity)
+        plant(entity)
         control.maintain_water()
 
 
