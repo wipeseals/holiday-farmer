@@ -58,20 +58,17 @@ scenarios = [
     (Unlocks.Pumpkins, 5),  # Carrot: 256k
     (Unlocks.Expand, 6),  # Pumpkin: 64k
     (Unlocks.Cactus, 2),  # Pumpkin: 120k
-    (Unlocks.Mazes, 2),  # Cactus: 72k
-    (Unlocks.Cactus, 3),  # Pumpkin: 720k
+    (Unlocks.Mazes, 3),  # Cactus: 432k
     (Unlocks.Megafarm, 2),  # Gold: 128k
+    (Unlocks.Mazes, 2),  # Cactus: 72k
     (Unlocks.Dinosaurs, 0),  # Cactus: 2k
     (Unlocks.Dinosaurs, 1),  # Cactus:
     (Unlocks.Dinosaurs, 2),  # Cactus:
     (Unlocks.Dinosaurs, 3),  # Cactus:
-    (Unlocks.Dinosaurs, 4),  # Cactus:
-    ####
-    (Unlocks.Megafarm, 3),  # Gold:
-    (Unlocks.Megafarm, 4),  # Gold:
-    #
-    # after megafarm
+    (Unlocks.Megafarm, 3),  # Gold: 128k
     (Unlocks.Expand, 7),  # Pumpkin: 512k
+    # Final upgrades
+    (Unlocks.Leaderboard, 0),  # Gold: 1M, Bone: 2M
 ]
 
 
@@ -137,6 +134,14 @@ def prod_gold(num_needed):
             worker.update_maze_mt(0, 0, w, h)
 
 
+def prod_bone(num_needed):
+    w, h = get_world_size(), get_world_size()
+
+    current = num_items(Items.Bone)
+    while (num_items(Items.Bone) - current) < num_needed:
+        worker.update_dino()
+
+
 prod_table = {
     Items.Hay: prod_hay,
     Items.Wood: prod_wood,
@@ -144,6 +149,7 @@ prod_table = {
     Items.Pumpkin: prod_pumpkins,
     Items.Cactus: prod_cactus,
     Items.Gold: prod_gold,
+    Items.Bone: prod_bone,
 }
 
 prev_time = get_time()
@@ -174,6 +180,4 @@ for unlock_target, level in scenarios:
         quick_print("Failed to unlock:", unlock_target, "Level:", level)
         break
 
-while True:
-    do_a_flip()  # just to keep the program running
-    pass
+quick_print("Finished all scenarios")
