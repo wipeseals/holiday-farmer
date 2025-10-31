@@ -1,9 +1,3 @@
-import util
 from __builtins__ import *
 
-clear()
-
-width = get_world_size()
-height = get_world_size()
-while True:
-    util.update_maze_mt(0, 0, width, height)
+leaderboard_run(Leaderboards.Fastest_Reset, "main_fastest_reset", 1.0)
