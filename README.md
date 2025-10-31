@@ -1,8 +1,5 @@
 # Holiday Farmer
 
-The Farmer Was Replaced で使用した実装。
+The Farmer Was Replaced で使用した実装。現時点では解けるだけで最適化はされていない。
 
-## How to Use
-
-1. `The Farmer Was Replaced` のセーブデータフォルダに移動
-2. Saves Directory 内の任意のセーブフォルダに本 repo を clone
+![screenshot](./misc/01.png)
