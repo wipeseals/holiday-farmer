@@ -30,7 +30,7 @@ def set_ground_type(ground):
 
 
 def maintain_water():
-    if num_items(Items.Water) == 0:
+    if num_items(Items.Water) < max_drones():
         return False
 
     if get_water() < 0.1:
@@ -39,7 +39,7 @@ def maintain_water():
 
 
 def use_fertilizer():
-    if num_items(Items.Fertilizer) == 0:
+    if num_items(Items.Fertilizer) < max_drones():
         return False
     use_item(Items.Fertilizer)
     return True
