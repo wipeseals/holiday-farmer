@@ -33,33 +33,26 @@ def update_primitives(sx, sy, width, height, ground, entity):
 
 
 def update_glass(sx, sy, width, height):
-    change_hat(Hats.Straw_Hat)
     update_primitives(sx, sy, width, height, Grounds.Grassland, Entities.Grass)
 
 
 def update_bush(sx, sy, width, height):
-    change_hat(Hats.Green_Hat)
     update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Bush)
 
 
 def update_carrot(sx, sy, width, height):
-    change_hat(Hats.Carrot_Hat)
     update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Carrot)
 
 
 def update_sunflower(sx, sy, width, height):
-    change_hat(Hats.Sunflower_Hat)
     update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Sunflower)
 
 
 def update_tree(sx, sy, width, height):
-    change_hat(Hats.Tree_Hat)
     update_primitives(sx, sy, width, height, Grounds.Soil, Entities.Tree)
 
 
 def update_pumpkin(sx, sy, width, height):
-    change_hat(Hats.Pumpkin_Hat)
-
     for j in range(height):
         todo_x_list = list(range(sx, sx + width))
         while len(todo_x_list) > 0:
@@ -123,8 +116,6 @@ def sort_cactus(sx, sy, width, height):
 
 
 def update_cactus(x, y, width, height):
-    change_hat(Hats.Cactus_Hat)
-
     # harvest all area
     update_primitives(x, y, width, height, Grounds.Soil, Entities.Cactus)
     # harvest sorted cactus
@@ -168,7 +159,7 @@ def update_dino():
         need_abort = need_abort or not control.move_to(sx, sy)
 
     # finalize
-    change_hat(Hats.Gray_Hat)
+    change_hat(Hats.Straw_Hat)
 
 
 def solve_maze(sx, sy, px, py, gx, gy, width, height):
@@ -214,8 +205,7 @@ def update_maze(x, y, width, height):
     sx, sy = x, y  # todo x, y != (0, 0)
 
     # init maze
-    control.move_to(sx, sy)
-    plant(Entities.Bush)
+    update_primitives(sx, sy, 1, 1, Grounds.Soil, Entities.Bush)
     substance = width * 2 ** (num_unlocked(Unlocks.Mazes) - 1)
     use_item(Items.Weird_Substance, substance)
 
@@ -266,8 +256,6 @@ def update_pumpkin_row(sx, y, width):
 
 
 def update_pumpkin_mt(sx, sy, width, height):
-    change_hat(Hats.Pumpkin_Hat)
-
     drones = []
     for j in range(height):
         y = sy + j
@@ -377,8 +365,6 @@ def sort_cactus_mt(sx, sy, width, height):
 
 
 def update_cactus_mt(x, y, width, height):
-    change_hat(Hats.Cactus_Hat)
-
     # plant & sort
     update_primitives_mt(x, y, width, height, Grounds.Soil, Entities.Cactus)
     sort_cactus_mt(x, y, width, height)
@@ -451,8 +437,7 @@ def update_maze_mt(x, y, width, height):
     sx, sy = x, y  # todo x, y != (0, 0)
 
     # init maze
-    control.move_to(sx, sy)
-    plant(Entities.Bush)
+    update_primitives(sx, sy, 1, 1, Grounds.Soil, Entities.Bush)
     substance = width * 2 ** (num_unlocked(Unlocks.Mazes) - 1)
     use_item(Items.Weird_Substance, substance)
 
